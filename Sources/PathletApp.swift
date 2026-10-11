@@ -13,7 +13,7 @@ struct PathletApp: App {
             Button("Open Terminal Here") { delegate.actions.openTerminal() }
             Button("Open in Editor…") { delegate.actions.openEditor() }
             Divider()
-            Button("Enable Finder Extension…") { delegate.enableExtension() }
+            Button("Finder Extension Settings…") { delegate.enableExtension() }
             SettingsLink { Text("About Pathlet…") }
             Button("Quit Pathlet") { NSApplication.shared.terminate(nil) }
         }
@@ -29,9 +29,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for url in urls { actions.handle(url) }
     }
     func enableExtension() {
-        // The system owns extension approval; this opens its settings pane.
-        if let url = URL(string: "x-apple.systempreferences:com.apple.ExtensionsPreferences") {
-            NSWorkspace.shared.open(url)
-        }
+        FinderExtensionSettings.open()
     }
 }

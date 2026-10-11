@@ -6,7 +6,7 @@ A shorter path through Finder. Native macOS 14+ SwiftUI utility built from the l
 
 1. Open `Pathlet.xcodeproj` and Run the Pathlet scheme, or use the VS Code Run Pathlet task.
 2. Grant Pathlet Automation access to Finder when prompted. The floating bar appears while Finder is frontmost and a filesystem window is visible. Terminal actions request Terminal Automation separately.
-3. From the menu bar, choose **Enable Finder Extension…**. Enable **Pathlet Finder Actions** in System Settings under Finder extensions (on recent macOS: General → Login Items & Extensions → Finder). If the link opens a different pane, search Settings for Extensions.
+3. From the menu bar, choose **Finder Extension Settings…**. Turn on **Pathlet** in the extension sheet and click **Done**. On the tested macOS version, this sheet is labeled **File Providers**. This uses macOS’s Finder Sync management API instead of a generic System Settings link.
 4. Right-click a folder or the background of a Finder window for New File, Copy Folder Path, Open Terminal Here, or Open in Editor. The extension forwards the clicked folder to the host app instead of resolving another window.
 
 Building the extension does not enable it. Finder Sync menus can conflict with other extensions monitoring the same folders, especially cloud providers. Current monitoring covers the filesystem root and descendants. Test iCloud and external volumes on the target OS.
