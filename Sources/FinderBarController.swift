@@ -93,16 +93,32 @@ private extension CGRect {
 
 struct FinderBarView: View {
     @ObservedObject var actions: FinderActions
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var copied = false
+    @State private var copySequence = 0
+
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 6) {
             Image(systemName: "folder").foregroundStyle(.secondary)
             Text(actions.path).lineLimit(1).truncationMode(.middle)
                 .textSelection(.enabled).font(.system(size: 12))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .help(actions.path)
-            Button { actions.copyPath() } label: { Image(systemName: "doc.on.doc") }
-                .help("Copy folder path").accessibilityLabel("Copy folder path")
-            Divider().frame(height: 16)
+                .padding(.trailing, 4)
+            Button {
+                if actions.copyPath() {
+                    copied = true
+                    copySequence += 1
+                }
+            } label: {
+                Image(systemName: copied ? "checkmark" : "doc.on.doc")
+                    .contentTransition(.opacity)
+                    .foregroundStyle(copied ? Color.accentColor : Color.primary)
+            }
+            .help(copied ? "Path copied" : "Copy folder path")
+            .accessibilityLabel(copied ? "Path copied" : "Copy folder path")
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: copied)
+            Divider().frame(height: 16).padding(.horizontal, 2)
             Button { actions.newFile() } label: { Image(systemName: "doc.badge.plus") }
                 .help("New file").accessibilityLabel("New file")
             Button { actions.openTerminal() } label: { Image(systemName: "terminal") }
@@ -110,10 +126,45 @@ struct FinderBarView: View {
             Button { actions.openEditor() } label: { Image(systemName: "curlybraces") }
                 .help("Open in editor").accessibilityLabel("Open in editor")
         }
-        .buttonStyle(.borderless)
-        .padding(.horizontal, 12)
+        .buttonStyle(PathActionButtonStyle())
+        .padding(.horizontal, 8)
         .frame(height: 40)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator, lineWidth: 0.5))
+        .task(id: copySequence) {
+            guard copied else { return }
+            do { try await Task.sleep(for: .seconds(1.4)) }
+            catch { return } // A repeated copy starts a fresh confirmation interval.
+            copied = false
+        }
+        .onChange(of: actions.path) { _, _ in copied = false }
+    }
+}
+
+private struct PathActionButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var hovering = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed && isEnabled
+        let highlighted = hovering && isEnabled
+        configuration.label
+            .font(.system(size: 12, weight: .medium))
+            .frame(width: 28, height: 28)
+            .background {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.primary.opacity(pressed ? 0.14 : highlighted ? 0.07 : 0))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 6)
+                    .strokeBorder(Color.primary.opacity(highlighted ? 0.08 : 0), lineWidth: 0.5)
+            }
+            .opacity(isEnabled ? 1 : 0.4)
+            .scaleEffect(pressed && !reduceMotion ? 0.92 : 1)
+            .contentShape(RoundedRectangle(cornerRadius: 6))
+            .onHover { hovering = $0 }
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: pressed)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: highlighted)
     }
 }

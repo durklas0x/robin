@@ -34,8 +34,9 @@ final class FinderActions: ObservableObject {
         end tell
         """)
         guard let value = result.stringValue else { throw ActionError.failed("Finder did not return a folder.") }
-        path = value
-        return URL(fileURLWithPath: value, isDirectory: true)
+        let url = URL(fileURLWithPath: value, isDirectory: true)
+        path = url.path
+        return url
     }
 
     private func perform(_ action: () throws -> Void) {
@@ -52,12 +53,15 @@ final class FinderActions: ObservableObject {
 
     func refresh() { perform { _ = try folder() } }
 
-    func copyPath(in supplied: URL? = nil) {
+    @discardableResult
+    func copyPath(in supplied: URL? = nil) -> Bool {
+        var copied = false
         perform {
             let folder = try folder(supplied)
             NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(folder.path, forType: .string)
+            copied = NSPasteboard.general.setString(folder.path, forType: .string)
         }
+        return copied
     }
 
     func newFile(in supplied: URL? = nil) {
