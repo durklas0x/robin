@@ -67,19 +67,8 @@ final class FinderActions: ObservableObject {
     func newFile(in supplied: URL? = nil) {
         perform {
             let folder = try folder(supplied)
-            let prompt = NSAlert()
-            prompt.messageText = "New File"
-            prompt.informativeText = "Create an empty file in:\n" + folder.path
-            prompt.addButton(withTitle: "Create")
-            prompt.addButton(withTitle: "Cancel")
-            let nameField = NSTextField(string: "Untitled.txt")
-            nameField.frame = NSRect(x: 0, y: 0, width: 340, height: 24)
-            nameField.setAccessibilityLabel("File name")
-            prompt.accessoryView = nameField
-            prompt.window.initialFirstResponder = nameField
-            NSApp.activate(ignoringOtherApps: true)
-            guard prompt.runModal() == .alertFirstButtonReturn else { return }
-            let url = try NewFileDestination.url(name: nameField.stringValue, in: folder)
+            guard let name = NewFileDialog(folder: folder).run() else { return }
+            let url = try NewFileDestination.url(name: name, in: folder)
             // Never overwrite an existing file, after the filename prompt is confirmed.
             try Data().write(to: url, options: .withoutOverwriting)
             NSWorkspace.shared.activateFileViewerSelecting([url])
