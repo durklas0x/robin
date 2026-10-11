@@ -18,7 +18,13 @@ final class FinderActions: ObservableObject {
         return result
     }
 
-    private func folder() throws -> URL {
+    private func folder(_ supplied: URL? = nil) throws -> URL {
+        if let supplied {
+            let values = try supplied.resourceValues(forKeys: [.isDirectoryKey])
+            guard values.isDirectory == true else { throw ActionError.failed("Choose a folder for this action.") }
+            path = supplied.path
+            return supplied
+        }
         let result = try script("""
         tell application "Finder"
             if (count of Finder windows) is 0 then
@@ -34,22 +40,29 @@ final class FinderActions: ObservableObject {
 
     private func perform(_ action: () throws -> Void) {
         do { try action(); message = "" }
-        catch { message = error.localizedDescription }
+        catch {
+            message = error.localizedDescription
+            let alert = NSAlert()
+            alert.messageText = "Pathlet could not complete the action"
+            alert.informativeText = message
+            NSApp.activate(ignoringOtherApps: true)
+            alert.runModal()
+        }
     }
 
     func refresh() { perform { _ = try folder() } }
 
-    func copyPath() {
+    func copyPath(in supplied: URL? = nil) {
         perform {
-            let folder = try folder()
+            let folder = try folder(supplied)
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(folder.path, forType: .string)
         }
     }
 
-    func newFile() {
+    func newFile(in supplied: URL? = nil) {
         perform {
-            let folder = try folder()
+            let folder = try folder(supplied)
             let panel = NSSavePanel()
             panel.directoryURL = folder
             panel.nameFieldStringValue = "Untitled.txt"
@@ -63,9 +76,9 @@ final class FinderActions: ObservableObject {
         }
     }
 
-    func openTerminal() {
+    func openTerminal(in supplied: URL? = nil) {
         perform {
-            let folder = try folder()
+            let folder = try folder(supplied)
             let command = "cd -- " + shellQuote(folder.path)
             _ = try script("""
             tell application "Terminal"
@@ -76,9 +89,9 @@ final class FinderActions: ObservableObject {
         }
     }
 
-    func openEditor() {
+    func openEditor(in supplied: URL? = nil) {
         perform {
-            let folder = try folder()
+            let folder = try folder(supplied)
             let panel = NSOpenPanel()
             panel.directoryURL = URL(fileURLWithPath: "/Applications")
             panel.allowedContentTypes = [.applicationBundle]
@@ -91,6 +104,16 @@ final class FinderActions: ObservableObject {
                     Task { @MainActor in self.message = error.localizedDescription }
                 }
             }
+        }
+    }
+
+    func handle(_ url: URL) {
+        guard let request = ActionRequest(url: url) else { return }
+        switch request.action {
+        case .copy: copyPath(in: request.folder)
+        case .newFile: newFile(in: request.folder)
+        case .terminal: openTerminal(in: request.folder)
+        case .editor: openEditor(in: request.folder)
         }
     }
 

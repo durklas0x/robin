@@ -2,34 +2,19 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var actions: FinderActions
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Label("Pathlet", systemImage: "folder.badge.gearshape")
-                .font(.largeTitle.bold())
-            Text("A shorter path through Finder.").foregroundStyle(.secondary)
-            GroupBox("Current Finder location") {
-                HStack {
-                    Text(actions.path.isEmpty ? "Refresh to read your Finder folder" : actions.path)
-                        .textSelection(.enabled)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Button("Refresh") { actions.refresh() }
-                    Button("Copy") { actions.copyPath() }
-                        .keyboardShortcut("c", modifiers: [.command, .shift])
-                }.padding(8)
+        VStack(alignment: .leading, spacing: 16) {
+            Label("Pathlet", systemImage: "folder.badge.gearshape").font(.title.bold())
+            Text("Your folder actions, right beside Finder.")
+            Text("The location bar follows the active Finder window. Grant Finder Automation access when macOS asks.")
+                .fixedSize(horizontal: false, vertical: true)
+            Button("Enable Finder right-click actions…") {
+                NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.ExtensionsPreferences")!)
             }
-            HStack {
-                Button("New File…", systemImage: "doc.badge.plus") { actions.newFile() }
-                Button("Terminal", systemImage: "terminal") { actions.openTerminal() }
-                Button("Editor…", systemImage: "curlybraces") { actions.openEditor() }
-            }
-            Text("This starter provides folder actions and a selectable location bar. Finder right-click integration, a global shortcut, and mouse/trackpad navigation are next.")
-                .font(.callout).foregroundStyle(.secondary)
-            if !actions.message.isEmpty {
-                Text(actions.message).font(.callout).textSelection(.enabled)
-            }
-        }
-        .padding(28)
-        .frame(minWidth: 620, minHeight: 300)
+            Text("In System Settings, enable Pathlet Finder Actions under Finder extensions. On recent macOS versions, look under General → Login Items & Extensions → Finder.")
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            if !actions.message.isEmpty { Text(actions.message).foregroundStyle(.red) }
+        }.padding(24).frame(width: 440)
     }
 }

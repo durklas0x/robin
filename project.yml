@@ -17,6 +17,7 @@ targets:
     platform: macOS
     sources:
       - Sources
+      - Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet
@@ -24,8 +25,43 @@ targets:
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_NSAppleEventsUsageDescription: "Pathlet reads your current Finder folder and opens Terminal there."
         ENABLE_HARDENED_RUNTIME: YES
+    dependencies:
+      - target: PathletFinder
+        embed: true
+    info:
+      path: Config/Pathlet-Info.plist
+      properties:
+        LSUIElement: true
+        NSAppleEventsUsageDescription: "Pathlet reads Finder window locations and opens Terminal in your folder."
+        CFBundleURLTypes:
+          - CFBundleURLName: com.martynasgz.Pathlet.actions
+            CFBundleURLSchemes: [pathlet]
     entitlements:
       path: Sources/Pathlet.entitlements
       properties:
         com.apple.security.app-sandbox: false
         com.apple.security.automation.apple-events: true
+
+  PathletFinder:
+    type: app-extension
+    platform: macOS
+    sources:
+      - FinderExtension
+      - Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet.Finder
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+    info:
+      path: Config/Finder-Info.plist
+      properties:
+        CFBundleDisplayName: Pathlet Finder Actions
+        NSExtension:
+          NSExtensionAttributes: {}
+          NSExtensionPointIdentifier: com.apple.FinderSync
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FinderSync
+    entitlements:
+      path: Config/PathletFinder.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
