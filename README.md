@@ -24,6 +24,7 @@ This is a separate nonactivating panel. Position tracking uses Finder Automation
 - `Sources/FinderActions.swift`: clipboard, safe new-file dialog, Terminal and editor actions. Existing files are never overwritten; action failures display an alert.
 - `FinderExtension/FinderSync.swift`: embedded Finder Sync contextual menu.
 - `Shared/ActionRequest.swift`: validated and URL-encoded folder requests.
+- `FinderExtension/MenuRequestStore.swift`: requests retained in the extension, keyed by menu item tags. Finder does not preserve object metadata on copied menu items. Actions launch the containing app directly.
 - `Sources/ContentView.swift`: setup/about panel.
 - `project.yml`: XcodeGen source of truth. Regenerate with `xcodegen generate`.
 
@@ -41,7 +42,14 @@ xcrun swiftc Shared/ActionRequest.swift Sources/BarPlacement.swift Tests/SmokeTe
 /tmp/pathlet-smoke
 ```
 
-Verified: host and embedded extension build, path encoding with spaces/quotes/Unicode, invalid action rejection, negative-origin display placement, and bottom-edge fallback.
+Verified: host and embedded extension build, path encoding with spaces/quotes/Unicode, invalid action rejection, negative-origin display placement, bottom-edge fallback, and all four menu requests reconstructed from proxy items without representedObject metadata.
+
+Run the menu handoff regression check with:
+
+```sh
+xcrun swiftc Shared/ActionRequest.swift FinderExtension/MenuRequestStore.swift Tests/MenuHandoffTests.swift -o /tmp/pathlet-menu-tests
+/tmp/pathlet-menu-tests
+```
 
 Live bar placement and menus still need checking with Finder foreground, Automation granted, and extension enabled. Also test minimizing, Spaces/fullscreen, cloud locations, cancellation, existing-file rejection, and Automation denial.
 

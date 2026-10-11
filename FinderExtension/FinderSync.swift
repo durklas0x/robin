@@ -1,7 +1,9 @@
 import Cocoa
 import FinderSync
+import OSLog
 
 final class FinderSync: FIFinderSync {
+    private var requests = MenuRequestStore()
     override init() {
         super.init()
         // Register local filesystem locations, including mounted external volumes.
@@ -30,14 +32,25 @@ final class FinderSync: FIFinderSync {
             let item = NSMenuItem(title: title, action: #selector(runAction(_:)), keyEquivalent: "")
             item.target = self
             // Capture context now; do not ask the host to re-read another Finder window.
-            item.representedObject = ActionRequest(action: action, folder: folder).url
+            item.tag = requests.register(ActionRequest(action: action, folder: folder))
             menu.addItem(item)
         }
         return menu
     }
 
     @objc private func runAction(_ sender: NSMenuItem) {
-        guard let url = sender.representedObject as? URL else { return }
-        NSWorkspace.shared.open(url)
+        guard let request = requests.request(for: sender.tag) else { return }
+        // Use this extension's containing app, not Launch Services' preferred copy.
+        let host = Bundle.main.bundleURL.deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.activates = false
+        NSWorkspace.shared.open([request.url], withApplicationAt: host,
+                                configuration: configuration) { _, error in
+            if let error {
+                Logger(subsystem: "com.martynasgz.Pathlet", category: "handoff")
+                    .error("Could not open the containing app: \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 }
