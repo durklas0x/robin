@@ -1,0 +1,31 @@
+name: Pathlet
+options:
+  bundleIdPrefix: com.martynasgz
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  Pathlet:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        INFOPLIST_KEY_NSAppleEventsUsageDescription: "Pathlet reads your current Finder folder and opens Terminal there."
+        ENABLE_HARDENED_RUNTIME: YES
+    entitlements:
+      path: Sources/Pathlet.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+        com.apple.security.automation.apple-events: true
