@@ -21,7 +21,7 @@ This is a separate nonactivating panel. Position tracking uses Finder Automation
 
 - `Sources/FinderBarController.swift`: floating panel and Finder tracking.
 - `Sources/BarPlacement.swift`: display-aware geometry.
-- `Sources/FinderActions.swift`: clipboard, safe new-file dialog, Terminal and editor actions. Existing files are never overwritten; action failures display an alert.
+- `Sources/FinderActions.swift`: clipboard, folder-anchored filename prompt, Terminal and editor actions. Existing files are never overwritten; action failures display an alert.
 - `FinderExtension/FinderSync.swift`: embedded Finder Sync contextual menu.
 - `Shared/ActionRequest.swift`: validated and URL-encoded folder requests.
 - `FinderExtension/MenuRequestStore.swift`: requests retained in the extension, keyed by menu item tags. Finder does not preserve object metadata on copied menu items. Actions launch the containing app directly.
@@ -38,7 +38,7 @@ Mouse back/forward, trackpad navigation, a global copy-folder shortcut, and pers
 
 ```sh
 xcodebuild -project Pathlet.xcodeproj -scheme Pathlet -configuration Debug -derivedDataPath build CODE_SIGN_IDENTITY=- build
-xcrun swiftc Shared/ActionRequest.swift Sources/BarPlacement.swift Tests/SmokeTests.swift -o /tmp/pathlet-smoke
+xcrun swiftc Shared/ActionRequest.swift Sources/BarPlacement.swift Sources/NewFileDestination.swift Tests/SmokeTests.swift -o /tmp/pathlet-smoke
 /tmp/pathlet-smoke
 ```
 
@@ -51,7 +51,9 @@ xcrun swiftc Shared/ActionRequest.swift FinderExtension/MenuRequestStore.swift T
 /tmp/pathlet-menu-tests
 ```
 
-Live bar placement and menus still need checking with Finder foreground, Automation granted, and extension enabled. Also test minimizing, Spaces/fullscreen, cloud locations, cancellation, existing-file rejection, and Automation denial.
+Live verified: Copy Folder Path from Finder puts the clicked folder on the clipboard, and Open in Editor opens the app chooser. The host handles GetURL Apple Events explicitly. New File’s folder-anchored prompt was verified live and cancelled without writing a file. Terminal launched during the live test; its working directory could not be inspected because the computer-use tool blocks Terminal access. Terminal may require its Automation permission.
+
+Live bar placement still needs checking with Finder foreground and Automation granted. Also test minimizing, Spaces/fullscreen, cloud locations, cancellation, existing-file rejection, and Automation denial.
 
 ## Platform references
 

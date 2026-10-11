@@ -1,4 +1,5 @@
 import SwiftUI
+import Carbon
 
 @main
 struct PathletApp: App {
@@ -24,9 +25,17 @@ struct PathletApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let actions = FinderActions()
     lazy var bar = FinderBarController(actions: actions)
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSAppleEventManager.shared().setEventHandler(self,
+            andSelector: #selector(receiveURL(_:withReplyEvent:)),
+            forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
+    }
     func applicationDidFinishLaunching(_ notification: Notification) { bar.start() }
-    func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls { actions.handle(url) }
+    @objc private func receiveURL(_ event: NSAppleEventDescriptor, withReplyEvent reply: NSAppleEventDescriptor) {
+        guard let value = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue,
+              let url = URL(string: value) else { return }
+        // Deliver after startup and outside the Apple Event callback's stack.
+        Task { @MainActor in self.actions.handle(url) }
     }
     func enableExtension() {
         FinderExtensionSettings.open()

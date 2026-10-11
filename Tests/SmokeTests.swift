@@ -22,6 +22,11 @@ struct SmokeTests {
             if window.minY - 46 >= display.minY { precondition(bar.maxY < window.minY) }
             else { precondition(bar.minY >= window.minY) }
         }
+        let folder = URL(fileURLWithPath: "/tmp/pathlet-test", isDirectory: true)
+        precondition((try! NewFileDestination.url(name: "notes ' & 🗂.txt", in: folder)).deletingLastPathComponent() == folder)
+        for name in ["", "   ", ".", "..", "../escape", "/absolute", "bad\0name"] {
+            precondition((try? NewFileDestination.url(name: name, in: folder)) == nil)
+        }
         print("PASS: action URL encoding/validation and multi-display bar placement")
     }
 }
