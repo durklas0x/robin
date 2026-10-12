@@ -6,7 +6,7 @@ final class FinderBarController {
     private let actions: FinderActions
     private var timer: Timer?
     private lazy var panel: NSPanel = {
-        let panel = NSPanel(contentRect: .zero,
+        let panel = FinderBarPanel(contentRect: .zero,
                             styleMask: [.borderless, .nonactivatingPanel],
                             backing: .buffered, defer: false)
         panel.isFloatingPanel = true
@@ -87,6 +87,11 @@ final class FinderBarController {
     }
 }
 
+private final class FinderBarPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { false }
+}
+
 private extension CGRect {
     var area: CGFloat { isNull ? 0 : width * height }
 }
@@ -96,15 +101,39 @@ struct FinderBarView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var copied = false
     @State private var copySequence = 0
+    @State private var draftPath = ""
+    @FocusState private var editingPath: Bool
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "folder").foregroundStyle(.secondary)
-            Text(actions.path).lineLimit(1).truncationMode(.middle)
-                .textSelection(.enabled).font(.system(size: 12))
+            TextField("Folder path", text: $draftPath)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12))
+                .focused($editingPath)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .help(actions.path)
-                .padding(.trailing, 4)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 4)
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.primary.opacity(editingPath ? 0.06 : 0))
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5)
+                        .strokeBorder(Color.accentColor.opacity(editingPath ? 0.6 : 0), lineWidth: 1)
+                }
+                .help("Edit path · Return to open · Escape to cancel")
+                .accessibilityLabel("Folder path")
+                .onSubmit {
+                    if actions.navigate(to: draftPath) {
+                        editingPath = false
+                        draftPath = actions.path
+                    }
+                }
+                .onExitCommand {
+                    draftPath = actions.path
+                    editingPath = false
+                }
             Button {
                 if actions.copyPath() {
                     copied = true
@@ -137,7 +166,14 @@ struct FinderBarView: View {
             catch { return } // A repeated copy starts a fresh confirmation interval.
             copied = false
         }
-        .onChange(of: actions.path) { _, _ in copied = false }
+        .onAppear { draftPath = actions.path }
+        .onChange(of: actions.path) { _, path in
+            copied = false
+            if !editingPath { draftPath = path }
+        }
+        .onChange(of: editingPath) { _, editing in
+            if !editing { draftPath = actions.path }
+        }
     }
 }
 

@@ -74,6 +74,7 @@ targets:
       - Shared
       - Sources/BarPlacement.swift
       - Sources/NewFileDestination.swift
+      - Sources/FolderPath.swift
       - FinderExtension/MenuRequestStore.swift
     settings:
       base:

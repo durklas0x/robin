@@ -13,7 +13,7 @@ Building the extension does not enable it. Finder Sync menus can conflict with o
 
 ## Floating location bar
 
-The compact bar tracks the front Finder window's path and bounds every 400 ms while Finder is active. It is centered 6 points below the window. When there is insufficient room below, it moves inside the window's bottom edge, clamped to the display's visible area. It hides when Finder loses focus, no Finder window is visible, or the location is not a filesystem folder. Paths are selectable, with Copy, New File, Terminal, and Editor buttons.
+The compact bar tracks the front Finder window's path and bounds every 400 ms while Finder is active. It is centered 6 points below the window. When there is insufficient room below, it moves inside the window's bottom edge, clamped to the display's visible area. It hides when Finder loses focus, no Finder window is visible, or the location is not a filesystem folder. The path is editable, with Copy, New File, Terminal, and Editor buttons. Click the field and press Return to navigate; Escape cancels. Absolute paths, home-relative paths (`~/Documents`), relative paths, and local `file://` URLs are supported. Finder tracking does not replace a draft while the field is focused.
 
 This is a separate nonactivating panel. Position tracking uses Finder Automation and visible Quartz window bounds. Accessibility access is not needed for this implementation. Fullscreen/Spaces behavior and live multi-display movement need manual verification.
 

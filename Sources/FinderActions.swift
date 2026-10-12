@@ -64,6 +64,32 @@ final class FinderActions: ObservableObject {
         return copied
     }
 
+    @discardableResult
+    func navigate(to input: String) -> Bool {
+        var navigated = false
+        perform {
+            let base = URL(fileURLWithPath: path, isDirectory: true)
+            let destination = try FolderPath.resolve(input, relativeTo: base)
+            guard try destination.resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true else {
+                throw ActionError.failed("Enter the path of an existing folder.")
+            }
+            _ = try script("""
+            tell application "Finder"
+                set destination to (POSIX file \(appleScriptQuote(destination.path)) as alias)
+                if (count of Finder windows) is 0 then
+                    make new Finder window to destination
+                else
+                    set target of front Finder window to destination
+                end if
+                activate
+            end tell
+            """)
+            path = destination.path
+            navigated = true
+        }
+        return navigated
+    }
+
     func newFile(in supplied: URL? = nil) {
         perform {
             let folder = try folder(supplied)
