@@ -1,6 +1,6 @@
 name: Pathlet
 options:
-  bundleIdPrefix: com.martynasgz
+  bundleIdPrefix: com.durklas0x
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -20,7 +20,7 @@ targets:
       - Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_NSAppleEventsUsageDescription: "Pathlet reads your current Finder folder and opens Terminal there."
@@ -34,7 +34,7 @@ targets:
         LSUIElement: true
         NSAppleEventsUsageDescription: "Pathlet reads Finder window locations and opens Terminal in your folder."
         CFBundleURLTypes:
-          - CFBundleURLName: com.martynasgz.Pathlet.actions
+          - CFBundleURLName: com.durklas0x.Pathlet.actions
             CFBundleURLSchemes: [pathlet]
     entitlements:
       path: Sources/Pathlet.entitlements
@@ -50,7 +50,7 @@ targets:
       - Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet.Finder
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet.Finder
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
     info:
@@ -78,7 +78,7 @@ targets:
       - FinderExtension/MenuRequestStore.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet.Tests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:

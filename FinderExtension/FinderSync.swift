@@ -48,7 +48,7 @@ final class FinderSync: FIFinderSync {
         NSWorkspace.shared.open([request.url], withApplicationAt: host,
                                 configuration: configuration) { _, error in
             if let error {
-                Logger(subsystem: "com.martynasgz.Pathlet", category: "handoff")
+                Logger(subsystem: "com.durklas0x.Pathlet", category: "handoff")
                     .error("Could not open the containing app: \(error.localizedDescription, privacy: .public)")
             }
         }
