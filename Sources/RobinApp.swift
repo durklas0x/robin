@@ -2,13 +2,13 @@ import SwiftUI
 import Carbon
 
 @main
-struct PathletApp: App {
+struct RobinApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     var body: some Scene {
-        MenuBarExtra("Pathlet", systemImage: "folder.badge.gearshape") {
+        MenuBarExtra("Robin", systemImage: "folder.badge.gearshape") {
             Button("Finder Extension Settings…") { delegate.enableExtension() }
-            Button("About Pathlet…") { delegate.settings.show() }
-            Button("Quit Pathlet") { NSApplication.shared.terminate(nil) }
+            Button("About Robin…") { delegate.settings.show() }
+            Button("Quit Robin") { NSApplication.shared.terminate(nil) }
         }
     }
 }

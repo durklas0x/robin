@@ -4,10 +4,10 @@
     {
       "type": "lldb-dap",
       "request": "launch",
-      "name": "Build & Debug Pathlet",
-      "program": "${workspaceFolder}/build/Build/Products/Debug/Pathlet.app/Contents/MacOS/Pathlet",
+      "name": "Build & Debug Robin",
+      "program": "${workspaceFolder}/build/Build/Products/Debug/Robin.app/Contents/MacOS/Robin",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build Pathlet"
+      "preLaunchTask": "Build Robin"
     }
   ]
 }

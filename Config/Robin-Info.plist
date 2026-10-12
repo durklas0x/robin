@@ -20,10 +20,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.durklas0x.Pathlet.actions</string>
+			<string>com.durklas0x.Robin.actions</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>pathlet</string>
+				<string>robin</string>
 			</array>
 		</dict>
 	</array>
@@ -32,6 +32,6 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Pathlet reads Finder window locations and opens Terminal in your folder.</string>
+	<string>Robin reads Finder window locations and opens Terminal in your folder.</string>
 </dict>
 </plist>

@@ -103,7 +103,7 @@ private final class FinderBarPanel: NSPanel {
 }
 
 private extension Notification.Name {
-    static let finderBarDidEndEditing = Notification.Name("Pathlet.FinderBarDidEndEditing")
+    static let finderBarDidEndEditing = Notification.Name("Robin.FinderBarDidEndEditing")
 }
 
 private extension CGRect {

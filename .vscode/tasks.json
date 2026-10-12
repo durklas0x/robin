@@ -2,12 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build Pathlet",
+      "label": "Build Robin",
       "type": "shell",
       "command": "xcodebuild",
       "args": [
         "-scheme",
-        "Pathlet",
+        "Robin",
         "-configuration",
         "Debug",
         "-destination",
@@ -39,24 +39,24 @@
       }
     },
     {
-      "label": "Run Pathlet",
+      "label": "Run Robin",
       "type": "shell",
       "command": "open",
       "args": [
-        "${workspaceFolder}/build/Build/Products/Debug/Pathlet.app"
+        "${workspaceFolder}/build/Build/Products/Debug/Robin.app"
       ],
       "dependsOn": [
-        "Build Pathlet"
+        "Build Robin"
       ],
       "problemMatcher": []
     },
     {
-      "label": "Clean Pathlet",
+      "label": "Clean Robin",
       "type": "shell",
       "command": "xcodebuild",
       "args": [
         "-scheme",
-        "Pathlet",
+        "Robin",
         "-derivedDataPath",
         "build",
         "clean"
@@ -64,14 +64,14 @@
       "problemMatcher": []
     },
     {
-      "label": "Test Pathlet",
+      "label": "Test Robin",
       "type": "shell",
       "command": "xcodebuild",
       "args": [
         "-project",
-        "Pathlet.xcodeproj",
+        "Robin.xcodeproj",
         "-scheme",
-        "Pathlet",
+        "Robin",
         "-destination",
         "platform=macOS",
         "-derivedDataPath",

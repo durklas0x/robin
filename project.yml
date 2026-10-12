@@ -1,4 +1,4 @@
-name: Pathlet
+name: Robin
 options:
   bundleIdPrefix: com.durklas0x
   deploymentTarget:
@@ -12,7 +12,7 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
 
 targets:
-  Pathlet:
+  Robin:
     type: application
     platform: macOS
     sources:
@@ -20,29 +20,29 @@ targets:
       - Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Robin
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
-        INFOPLIST_KEY_NSAppleEventsUsageDescription: "Pathlet reads your current Finder folder and opens Terminal there."
+        INFOPLIST_KEY_NSAppleEventsUsageDescription: "Robin reads your current Finder folder and opens Terminal there."
         ENABLE_HARDENED_RUNTIME: YES
     dependencies:
-      - target: PathletFinder
+      - target: RobinFinder
         embed: true
     info:
-      path: Config/Pathlet-Info.plist
+      path: Config/Robin-Info.plist
       properties:
         LSUIElement: true
-        NSAppleEventsUsageDescription: "Pathlet reads Finder window locations and opens Terminal in your folder."
+        NSAppleEventsUsageDescription: "Robin reads Finder window locations and opens Terminal in your folder."
         CFBundleURLTypes:
-          - CFBundleURLName: com.durklas0x.Pathlet.actions
-            CFBundleURLSchemes: [pathlet]
+          - CFBundleURLName: com.durklas0x.Robin.actions
+            CFBundleURLSchemes: [robin]
     entitlements:
-      path: Sources/Pathlet.entitlements
+      path: Sources/Robin.entitlements
       properties:
         com.apple.security.app-sandbox: false
         com.apple.security.automation.apple-events: true
 
-  PathletFinder:
+  RobinFinder:
     type: app-extension
     platform: macOS
     sources:
@@ -50,23 +50,23 @@ targets:
       - Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet.Finder
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Robin.Finder
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
     info:
       path: Config/Finder-Info.plist
       properties:
-        CFBundleDisplayName: Pathlet Finder Actions
+        CFBundleDisplayName: Robin Finder Actions
         NSExtension:
           NSExtensionAttributes: {}
           NSExtensionPointIdentifier: com.apple.FinderSync
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FinderSync
     entitlements:
-      path: Config/PathletFinder.entitlements
+      path: Config/RobinFinder.entitlements
       properties:
         com.apple.security.app-sandbox: true
 
-  PathletTests:
+  RobinTests:
     type: bundle.unit-test
     platform: macOS
     sources:
@@ -78,15 +78,15 @@ targets:
       - FinderExtension/MenuRequestStore.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Pathlet.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Robin.Tests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:
-  Pathlet:
+  Robin:
     build:
       targets:
-        Pathlet: all
-        PathletTests: [test]
+        Robin: all
+        RobinTests: [test]
     test:
       targets:
-        - PathletTests
+        - RobinTests

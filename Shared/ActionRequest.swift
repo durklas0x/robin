@@ -12,7 +12,7 @@ struct ActionRequest {
 
     init?(url: URL) {
         guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              parts.scheme == "pathlet", parts.host == "action",
+              parts.scheme == "robin", parts.host == "action",
               let name = parts.queryItems?.first(where: { $0.name == "name" })?.value,
               let action = Action(rawValue: name),
               let path = parts.queryItems?.first(where: { $0.name == "folder" })?.value,
@@ -23,7 +23,7 @@ struct ActionRequest {
 
     var url: URL {
         var parts = URLComponents()
-        parts.scheme = "pathlet"
+        parts.scheme = "robin"
         parts.host = "action"
         parts.queryItems = [URLQueryItem(name: "name", value: action.rawValue),
                             URLQueryItem(name: "folder", value: folder.path)]

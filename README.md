@@ -1,12 +1,12 @@
-# Pathlet
+# Robin
 
-A shorter path through Finder. Native macOS 14+ SwiftUI utility built from the local `macos-template`.
+Finder’s little sidekick. Native macOS 14+ SwiftUI utility built from the local `macos-template`.
 
 ## Run and enable
 
-1. Open `Pathlet.xcodeproj` and Run the Pathlet scheme, or use the VS Code Run Pathlet task.
-2. Grant Pathlet Automation access to Finder when prompted. The floating bar appears while Finder is frontmost and a filesystem window is visible. Terminal actions request Terminal Automation separately.
-3. From the menu bar, choose **Finder Extension Settings…**. Turn on **Pathlet** in the extension sheet and click **Done**. On the tested macOS version, this sheet is labeled **File Providers**. This uses macOS’s Finder Sync management API instead of a generic System Settings link.
+1. Open `Robin.xcodeproj` and Run the Robin scheme, or use the VS Code Run Robin task.
+2. Grant Robin Automation access to Finder when prompted. The floating bar appears while Finder is frontmost and a filesystem window is visible. Terminal actions request Terminal Automation separately.
+3. From the menu bar, choose **Finder Extension Settings…**. Turn on **Robin** in the extension sheet and click **Done**. On the tested macOS version, this sheet is labeled **File Providers**. This uses macOS’s Finder Sync management API instead of a generic System Settings link.
 4. Right-click a folder or the background of a Finder window for New File, Copy Folder Path, Open Terminal Here, or Open in Editor. The extension forwards the clicked folder to the host app instead of resolving another window.
 
 Building the extension does not enable it. Finder Sync menus can conflict with other extensions monitoring the same folders, especially cloud providers. Current monitoring covers the filesystem root and descendants. Test iCloud and external volumes on the target OS.
@@ -36,16 +36,16 @@ Mouse back/forward, trackpad navigation, a global copy-folder shortcut, and pers
 
 ## Verification
 
-The tests are an XCTest target (`PathletTests`) in the Pathlet scheme, so Xcode and SourceKit can index them. In VS Code, run **Test Pathlet**, or use:
+The tests are an XCTest target (`RobinTests`) in the Robin scheme, so Xcode and SourceKit can index them. In VS Code, run **Test Robin**, or use:
 
 ```sh
-xcodebuild -project Pathlet.xcodeproj -scheme Pathlet -destination 'platform=macOS' -derivedDataPath build CODE_SIGN_IDENTITY=- test
+xcodebuild -project Robin.xcodeproj -scheme Robin -destination 'platform=macOS' -derivedDataPath build CODE_SIGN_IDENTITY=- test
 ```
 
 After regenerating the project, refresh the build-server configuration:
 
 ```sh
-xcode-build-server config -scheme Pathlet -project Pathlet.xcodeproj --build_root build
+xcode-build-server config -scheme Robin -project Robin.xcodeproj --build_root build
 ```
 
 If VS Code still shows stale diagnostics, run **Swift: Restart Language Server**. `buildServer.json` and generated build artifacts are local, ignored files.

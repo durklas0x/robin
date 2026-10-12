@@ -44,7 +44,7 @@ final class FinderActions: ObservableObject {
         catch {
             message = error.localizedDescription
             let alert = NSAlert()
-            alert.messageText = "Pathlet could not complete the action"
+            alert.messageText = "Robin could not complete the action"
             alert.informativeText = message
             NSApp.activate(ignoringOtherApps: true)
             alert.runModal()

@@ -8,7 +8,7 @@ final class SettingsWindowController: NSWindowController {
         let content = NSHostingView(rootView: ContentView().environmentObject(actions))
         let window = NSWindow(contentRect: NSRect(origin: .zero, size: content.fittingSize),
                               styleMask: [.titled, .closable], backing: .buffered, defer: false)
-        window.title = "Pathlet Settings"
+        window.title = "Robin Settings"
         window.isReleasedWhenClosed = false
         window.contentView = content
         window.center()

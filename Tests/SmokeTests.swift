@@ -12,8 +12,8 @@ final class SmokeTests: XCTestCase {
     }
 
     func testInvalidRequestsAreRejected() throws {
-        for input in ["https://action?name=copy&folder=/tmp", "pathlet://action?name=unknown&folder=/tmp",
-                      "pathlet://action?name=copy&folder=relative", "pathlet://action?name=copy&folder=/%00"] {
+        for input in ["https://action?name=copy&folder=/tmp", "robin://action?name=unknown&folder=/tmp",
+                      "robin://action?name=copy&folder=relative", "robin://action?name=copy&folder=/%00"] {
             XCTAssertNil(ActionRequest(url: try XCTUnwrap(URL(string: input))), input)
         }
     }
@@ -30,7 +30,7 @@ final class SmokeTests: XCTestCase {
     }
 
     func testNewFileDestinationStaysInSelectedFolder() throws {
-        let folder = URL(fileURLWithPath: "/tmp/pathlet-test", isDirectory: true)
+        let folder = URL(fileURLWithPath: "/tmp/robin-test", isDirectory: true)
         let file = try NewFileDestination.url(name: "notes ' & 🗂.txt", in: folder)
         XCTAssertEqual(file.deletingLastPathComponent(), folder)
         for name in ["", "   ", ".", "..", "../escape", "/absolute", "bad\0name"] {

@@ -24,7 +24,7 @@ final class FinderSync: FIFinderSync {
         let isDirectory = menuKind == .contextualMenuForContainer || candidate.hasDirectoryPath ||
             (try? candidate.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
         let folder = isDirectory ? candidate : candidate.deletingLastPathComponent()
-        let menu = NSMenu(title: "Pathlet")
+        let menu = NSMenu(title: "Robin")
         for (title, action) in [("New File", ActionRequest.Action.newFile),
                                 ("Copy Folder Path", .copy),
                                 ("Open Terminal Here", .terminal),
@@ -48,7 +48,7 @@ final class FinderSync: FIFinderSync {
         NSWorkspace.shared.open([request.url], withApplicationAt: host,
                                 configuration: configuration) { _, error in
             if let error {
-                Logger(subsystem: "com.durklas0x.Pathlet", category: "handoff")
+                Logger(subsystem: "com.durklas0x.Robin", category: "handoff")
                     .error("Could not open the containing app: \(error.localizedDescription, privacy: .public)")
             }
         }
