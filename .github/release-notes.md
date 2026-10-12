@@ -1,6 +1,6 @@
-Robin now has its own comic-mask app icon, including native light and dark appearances on macOS 26+. Earlier macOS versions use the light icon.
+Robin now guides you through setup on first launch, with required Finder extension and Automation checks, saved progress, and a quick feature tour. Reopen **Setup & Tour…** from the menu bar anytime, and optionally enable launch at login.
 
-Finder’s little sidekick: an editable floating path bar, New File, Copy Folder Path, and quick Terminal/editor actions.
+This release also fixes extension detection when FinderSync incorrectly reports an enabled extension as disabled, includes the app icon in extension settings, and adds an app overview and screenshots to the README.
 
 Universal build for Apple Silicon and Intel, macOS 14 or newer. This build is ad-hoc signed and **not notarized**.
 
@@ -10,4 +10,11 @@ Install:
 brew install --cask durklas0x/tap/robin
 ```
 
-See the [README](https://github.com/durklas0x/robin#readme) for first-launch approval and Finder extension setup.
+Upgrade:
+
+```sh
+brew update
+brew upgrade --cask durklas0x/tap/robin
+```
+
+See the [README](https://github.com/durklas0x/robin#readme) for first-launch approval and setup.

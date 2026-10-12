@@ -8,8 +8,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.0.1"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.1.0"
+    CURRENT_PROJECT_VERSION: "2"
 
 targets:
   Robin:
@@ -26,6 +26,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Robin
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR: all
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_NSAppleEventsUsageDescription: "Robin reads your current Finder folder and opens Terminal there."
@@ -54,9 +55,13 @@ targets:
     sources:
       - FinderExtension
       - Shared
+      - path: Sources/AppIcon.icon
+        type: file
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.durklas0x.Robin.Finder
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
     info:
@@ -82,6 +87,8 @@ targets:
       - Sources/BarPlacement.swift
       - Sources/NewFileDestination.swift
       - Sources/FolderPath.swift
+      - Sources/OnboardingProgress.swift
+      - Sources/FinderExtensionStatus.swift
       - FinderExtension/MenuRequestStore.swift
     settings:
       base:

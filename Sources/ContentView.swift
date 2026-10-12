@@ -2,19 +2,10 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var actions: FinderActions
-    // The legacy icon file contains the cream artwork, which contrasts with this window.
-    private var aboutIcon: NSImage {
-        guard let url = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
-              let image = NSImage(contentsOf: url) else {
-            return NSApplication.shared.applicationIconImage
-        }
-        return image
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image(nsImage: aboutIcon)
+                Image(nsImage: AppArtwork.icon)
                     .resizable()
                     .frame(width: 44, height: 44)
                     .accessibilityHidden(true)

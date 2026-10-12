@@ -23,6 +23,7 @@ final class FinderBarController {
     init(actions: FinderActions) { self.actions = actions }
 
     func start() {
+        guard timer == nil else { return }
         timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.update() }
         }
