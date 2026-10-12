@@ -65,3 +65,27 @@ targets:
       path: Config/PathletFinder.entitlements
       properties:
         com.apple.security.app-sandbox: true
+
+  PathletTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      - Shared
+      - Sources/BarPlacement.swift
+      - Sources/NewFileDestination.swift
+      - FinderExtension/MenuRequestStore.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.martynasgz.Pathlet.Tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Pathlet:
+    build:
+      targets:
+        Pathlet: all
+        PathletTests: [test]
+    test:
+      targets:
+        - PathletTests

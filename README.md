@@ -36,24 +36,21 @@ Mouse back/forward, trackpad navigation, a global copy-folder shortcut, and pers
 
 ## Verification
 
-```sh
-xcodebuild -project Pathlet.xcodeproj -scheme Pathlet -configuration Debug -derivedDataPath build CODE_SIGN_IDENTITY=- build
-xcrun swiftc Shared/ActionRequest.swift Sources/BarPlacement.swift Sources/NewFileDestination.swift Tests/SmokeTests.swift -o /tmp/pathlet-smoke
-/tmp/pathlet-smoke
-```
-
-Verified: host and embedded extension build, path encoding with spaces/quotes/Unicode, invalid action rejection, negative-origin display placement, bottom-edge fallback, and all four menu requests reconstructed from proxy items without representedObject metadata.
-
-Run the menu handoff regression check with:
+The tests are an XCTest target (`PathletTests`) in the Pathlet scheme, so Xcode and SourceKit can index them. In VS Code, run **Test Pathlet**, or use:
 
 ```sh
-xcrun swiftc Shared/ActionRequest.swift FinderExtension/MenuRequestStore.swift Tests/MenuHandoffTests.swift -o /tmp/pathlet-menu-tests
-/tmp/pathlet-menu-tests
+xcodebuild -project Pathlet.xcodeproj -scheme Pathlet -destination 'platform=macOS' -derivedDataPath build CODE_SIGN_IDENTITY=- test
 ```
 
-Live verified: Copy Folder Path from Finder puts the clicked folder on the clipboard, and Open in Editor opens the app chooser. The host handles GetURL Apple Events explicitly. New File’s folder-anchored prompt was verified live and cancelled without writing a file. Terminal launched during the live test; its working directory could not be inspected because the computer-use tool blocks Terminal access. Terminal may require its Automation permission.
+After regenerating the project, refresh the build-server configuration:
 
-Live bar placement still needs checking with Finder foreground and Automation granted. Also test minimizing, Spaces/fullscreen, cloud locations, cancellation, existing-file rejection, and Automation denial.
+```sh
+xcode-build-server config -scheme Pathlet -project Pathlet.xcodeproj --build_root build
+```
+
+If VS Code still shows stale diagnostics, run **Swift: Restart Language Server**. `buildServer.json` and generated build artifacts are local, ignored files.
+
+Tests cover path encoding, invalid action rejection, display placement, safe filenames, and menu requests surviving Finder's proxy copies. Live verified: copy-path clipboard contents, editor chooser, and New File dialogs. Terminal launched but its working directory was not inspected because the computer-use tool blocks Terminal access.
 
 ## Platform references
 
