@@ -5,6 +5,8 @@ import Combine
 final class FinderActions: ObservableObject {
     @Published var path = ""
     @Published var message = ""
+    var fileDialog: FileDialogSnapshot?
+    private(set) var navigatingDialog = false
 
     private func script(_ source: String) throws -> NSAppleEventDescriptor {
         var error: NSDictionary?
@@ -23,6 +25,13 @@ final class FinderActions: ObservableObject {
             guard FolderPath.isDirectory(supplied) else { throw ActionError.failed("Choose a folder for this action.") }
             path = supplied.path
             return supplied
+        }
+        if let dialog = fileDialog {
+            guard let folder = dialog.folder else {
+                throw ActionError.failed("Enter an absolute folder path first; this dialog does not expose its current folder.")
+            }
+            path = folder.path
+            return folder
         }
         let result = try script("""
         tell application "Finder"
@@ -64,14 +73,33 @@ final class FinderActions: ObservableObject {
     }
 
     @discardableResult
-    func navigate(to input: String) -> Bool {
-        var navigated = false
+    func navigate(to input: String) async -> Bool {
+        guard !navigatingDialog else { return false }
+        var resolved: URL?
         perform {
-            let base = URL(fileURLWithPath: path, isDirectory: true)
+            let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
+            if fileDialog != nil && path.isEmpty && !trimmedInput.hasPrefix("/") && !trimmedInput.hasPrefix("~") && !trimmedInput.hasPrefix("file://") {
+                throw ActionError.failed("Enter an absolute folder path, such as ~/Documents.")
+            }
+            let base = URL(fileURLWithPath: path.isEmpty ? NSHomeDirectory() : path, isDirectory: true)
             let destination = try FolderPath.resolve(input, relativeTo: base)
             guard FolderPath.isDirectory(destination) else {
                 throw ActionError.failed("Enter the path of an existing folder.")
             }
+            resolved = destination
+        }
+        guard let destination = resolved else { return false }
+        if let dialog = fileDialog {
+            navigatingDialog = true
+            defer { navigatingDialog = false }
+            NSRunningApplication(processIdentifier: dialog.processID)?.activate(options: [])
+            let success = await Task.detached { FileDialogReader.navigate(to: destination, in: dialog) }.value
+            if success { path = destination.path }
+            else { perform { throw ActionError.failed("Could not navigate this file dialog. Use its Go to Folder command and try again.") } }
+            return success
+        }
+        var navigated = false
+        perform {
             _ = try script("""
             tell application "Finder"
                 set destination to (POSIX file \(appleScriptQuote(destination.path)) as alias)
@@ -90,13 +118,18 @@ final class FinderActions: ObservableObject {
     }
 
     func newFile(in supplied: URL? = nil) {
+        let dialog = supplied == nil ? fileDialog : nil
         perform {
             let folder = try folder(supplied)
             guard let name = NewFileDialog(folder: folder).run() else { return }
             let url = try NewFileDestination.url(name: name, in: folder)
             // Never overwrite an existing file, after the filename prompt is confirmed.
             try Data().write(to: url, options: .withoutOverwriting)
-            NSWorkspace.shared.activateFileViewerSelecting([url])
+            if let dialog {
+                NSRunningApplication(processIdentifier: dialog.processID)?.activate(options: [])
+            } else {
+                NSWorkspace.shared.activateFileViewerSelecting([url])
+            }
         }
     }
 

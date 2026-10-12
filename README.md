@@ -10,10 +10,11 @@ Requires macOS 14+; supports Apple Silicon and Intel.
 
 Robin lives in the menu bar and adds a floating location bar just below the active Finder window.
 
-- **Editable folder path:** copy the current location or type a different path. Press **Return** to open it or **Escape** to cancel. Absolute paths, relative paths, and `~/` are supported.
+- **Editable folder path:** copy the current location or type a different path. Press **Return** to open it or **Escape** to cancel. Absolute paths, relative paths, and `~/` are supported. Press **Tab** for native folder autocomplete.
 - **New File:** create an empty file in the current folder with a compact filename dialog.
 - **Quick tools:** open Terminal in the current folder, or choose an editor to open it in.
 - **Finder right-click actions:** New File, Copy Folder Path, Open Terminal Here, and Open in Editor are also available when you right-click a folder or Finder’s background.
+- **Open and Save dialogs:** optionally show the bar beside native file dialogs in other apps. Enable **Show in Open & Save Dialogs** from Robin’s menu and allow Accessibility access. Editing the path navigates the dialog without opening or saving a file. When a dialog does not expose its folder, enter an absolute path; folder action buttons remain disabled until its location is known.
 - **Guided setup:** required Finder permissions, a quick tour, and optional launch at login. Reopen **Setup & Tour…** from the menu bar whenever you need it.
 
 [![Finder’s right-click menu with Robin’s New File, Copy Folder Path, Open Terminal Here, and Open in Editor actions](docs/screenshots/context-menu-preview.svg)](docs/screenshots/context-menu.png)

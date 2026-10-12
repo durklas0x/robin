@@ -4,6 +4,8 @@ import SwiftUI
 @MainActor
 final class FinderBarController {
     private let actions: FinderActions
+    private let fileDialogs: FileDialogSupport
+    private var updating = false
     private var timer: Timer?
     private lazy var panel: NSPanel = {
         let panel = FinderBarPanel(contentRect: .zero,
@@ -20,17 +22,35 @@ final class FinderBarController {
         return panel
     }()
 
-    init(actions: FinderActions) { self.actions = actions }
+    init(actions: FinderActions, fileDialogs: FileDialogSupport) {
+        self.actions = actions
+        self.fileDialogs = fileDialogs
+    }
 
     func start() {
         guard timer == nil else { return }
         timer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.update() }
+            Task { @MainActor in await self?.update() }
         }
-        update()
+        Task { await update() }
     }
 
-    func update() {
+    func update() async {
+        guard !updating, !actions.navigatingDialog else { return }
+        updating = true
+        defer { updating = false }
+        fileDialogs.refreshPermission()
+        let frontmost = NSWorkspace.shared.frontmostApplication
+        if fileDialogs.enabled, fileDialogs.accessibilityAllowed, let processID = frontmost?.processIdentifier {
+            let dialog = await Task.detached { FileDialogReader.snapshot(processID: processID) }.value
+            guard NSWorkspace.shared.frontmostApplication?.processIdentifier == processID else { return }
+            if let dialog {
+                actions.fileDialog = dialog
+                show(folder: dialog.folder, bounds: dialog.bounds)
+                return
+            }
+        }
+        actions.fileDialog = nil
         guard NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.finder",
               let finder = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first,
               let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]],
@@ -49,18 +69,23 @@ final class FinderBarController {
                          abs(bounds.width - snapshot.bounds.width) < 3 &&
                          abs(bounds.height - snapshot.bounds.height) < 3
               }),
-              let mainScreen = NSScreen.screens.first else {
+              !NSScreen.screens.isEmpty else {
             panel.orderOut(nil)
             return
         }
-        // AppleScript/Quartz coordinates originate at the primary display's top-left.
-        let frame = CGRect(x: snapshot.bounds.minX,
-                           y: mainScreen.frame.maxY - snapshot.bounds.maxY,
-                           width: snapshot.bounds.width, height: snapshot.bounds.height)
+        show(folder: snapshot.folder, bounds: snapshot.bounds)
+    }
+
+    private func show(folder: URL?, bounds: CGRect) {
+        guard let mainScreen = NSScreen.screens.first else { panel.orderOut(nil); return }
+        // AppleScript/Quartz/Accessibility coordinates originate at the primary display's top-left.
+        let frame = CGRect(x: bounds.minX, y: mainScreen.frame.maxY - bounds.maxY,
+                           width: bounds.width, height: bounds.height)
         guard let screen = NSScreen.screens.max(by: {
             $0.frame.intersection(frame).area < $1.frame.intersection(frame).area
         }), screen.frame.intersects(frame) else { panel.orderOut(nil); return }
-        actions.path = snapshot.folder.path
+        let path = folder?.path ?? ""
+        if actions.path != path { actions.path = path }
         panel.setFrame(BarPlacement.frame(below: frame, visibleFrame: screen.visibleFrame), display: true)
         panel.orderFrontRegardless()
     }
@@ -98,15 +123,25 @@ struct FinderBarView: View {
     @State private var copied = false
     @State private var copySequence = 0
     @State private var draftPath = ""
-    @FocusState private var editingPath: Bool
+    @State private var editingPath = false
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "folder").foregroundStyle(.secondary)
-            TextField("Folder path", text: $draftPath)
-                .textFieldStyle(.plain)
-                .font(.system(size: 12))
-                .focused($editingPath)
+            FolderPathField(text: $draftPath, editing: $editingPath,
+                            base: URL(fileURLWithPath: actions.path.isEmpty ? NSHomeDirectory() : actions.path),
+                            onSubmit: {
+                                let input = draftPath
+                                Task {
+                                    if await actions.navigate(to: input) {
+                                        editingPath = false
+                                        draftPath = actions.path
+                                    }
+                                }
+                            }, onCancel: {
+                                draftPath = actions.path
+                                editingPath = false
+                            })
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 4)
@@ -117,18 +152,6 @@ struct FinderBarView: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .strokeBorder(Color.accentColor.opacity(editingPath ? 0.6 : 0), lineWidth: 1)
-                }
-                .help("Edit path · Return to open · Escape to cancel")
-                .accessibilityLabel("Folder path")
-                .onSubmit {
-                    if actions.navigate(to: draftPath) {
-                        editingPath = false
-                        draftPath = actions.path
-                    }
-                }
-                .onExitCommand {
-                    draftPath = actions.path
-                    editingPath = false
                 }
             Button {
                 if actions.copyPath() {
@@ -143,13 +166,14 @@ struct FinderBarView: View {
             .help(copied ? "Path copied" : "Copy folder path")
             .accessibilityLabel(copied ? "Path copied" : "Copy folder path")
             .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: copied)
+            .disabled(actions.path.isEmpty)
             Divider().frame(height: 16).padding(.horizontal, 2)
             Button { actions.newFile() } label: { Image(systemName: "doc.badge.plus") }
-                .help("New file").accessibilityLabel("New file")
+                .help("New file").accessibilityLabel("New file").disabled(actions.path.isEmpty)
             Button { actions.openTerminal() } label: { Image(systemName: "terminal") }
-                .help("Open Terminal here").accessibilityLabel("Open Terminal here")
+                .help("Open Terminal here").accessibilityLabel("Open Terminal here").disabled(actions.path.isEmpty)
             Button { actions.openEditor() } label: { Image(systemName: "curlybraces") }
-                .help("Open in editor").accessibilityLabel("Open in editor")
+                .help("Open in editor").accessibilityLabel("Open in editor").disabled(actions.path.isEmpty)
         }
         .buttonStyle(PathActionButtonStyle())
         .padding(.horizontal, 8)
