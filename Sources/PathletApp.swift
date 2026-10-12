@@ -5,10 +5,9 @@ import Carbon
 struct PathletApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     var body: some Scene {
-        Settings { ContentView().environmentObject(delegate.actions) }
         MenuBarExtra("Pathlet", systemImage: "folder.badge.gearshape") {
             Button("Finder Extension Settings…") { delegate.enableExtension() }
-            SettingsLink { Text("About Pathlet…") }
+            Button("About Pathlet…") { delegate.settings.show() }
             Button("Quit Pathlet") { NSApplication.shared.terminate(nil) }
         }
     }
@@ -18,6 +17,7 @@ struct PathletApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let actions = FinderActions()
     lazy var bar = FinderBarController(actions: actions)
+    lazy var settings = SettingsWindowController(actions: actions)
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSAppleEventManager.shared().setEventHandler(self,
             andSelector: #selector(receiveURL(_:withReplyEvent:)),
