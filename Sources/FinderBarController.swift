@@ -90,6 +90,20 @@ final class FinderBarController {
 private final class FinderBarPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }
+
+    override func resignKey() {
+        // The nonactivating panel can retain an inactive field-editor selection.
+        if let editor = firstResponder as? NSText {
+            editor.selectedRange = NSRange(location: 0, length: 0)
+        }
+        makeFirstResponder(nil)
+        super.resignKey()
+        NotificationCenter.default.post(name: .finderBarDidEndEditing, object: self)
+    }
+}
+
+private extension Notification.Name {
+    static let finderBarDidEndEditing = Notification.Name("Pathlet.FinderBarDidEndEditing")
 }
 
 private extension CGRect {
@@ -165,6 +179,10 @@ struct FinderBarView: View {
             do { try await Task.sleep(for: .seconds(1.4)) }
             catch { return } // A repeated copy starts a fresh confirmation interval.
             copied = false
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .finderBarDidEndEditing)) { _ in
+            editingPath = false
+            draftPath = actions.path
         }
         .onAppear { draftPath = actions.path }
         .onChange(of: actions.path) { _, path in
