@@ -68,8 +68,8 @@ jobs:
           app=build/Build/Products/Release/Robin.app
           [[ "$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist")" == "$VERSION" ]]
           codesign --verify --deep --strict "$app"
-          lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/Robin"
-          lipo -verify_arch arm64 x86_64 "$app/Contents/PlugIns/RobinFinder.appex/Contents/MacOS/RobinFinder"
+          lipo "$app/Contents/MacOS/Robin" -verify_arch arm64 x86_64
+          lipo "$app/Contents/PlugIns/RobinFinder.appex/Contents/MacOS/RobinFinder" -verify_arch arm64 x86_64
           mkdir -p dist
           ditto -c -k --sequesterRsrc --keepParent "$app" "dist/Robin-$VERSION-universal.zip"
           (cd dist && shasum -a 256 "Robin-$VERSION-universal.zip" > "Robin-$VERSION-universal.zip.sha256")
