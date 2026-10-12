@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (for example 1.0.0)
+        required: true
+        default: "1.0.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: robin-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
+      GH_TOKEN: ${{ github.token }}
+      VERSION_INPUT: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            version="$VERSION_INPUT"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Expected a version such as 1.0.0"; exit 1; }
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "TAG=v$version" >> "$GITHUB_ENV"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "Release v$version already exists. Choose a new version."
+            exit 1
+          fi
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Test
+        run: |
+          xcodebuild -project Robin.xcodeproj -scheme Robin \
+            -destination 'platform=macOS' -derivedDataPath build \
+            CODE_SIGN_IDENTITY=- test
+      - name: Build universal app
+        run: |
+          xcodebuild -project Robin.xcodeproj -scheme Robin \
+            -configuration Release -destination 'generic/platform=macOS' \
+            -derivedDataPath build ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY=- MARKETING_VERSION="$VERSION" build
+      - name: Verify and package
+        shell: bash
+        run: |
+          set -euo pipefail
+          app=build/Build/Products/Release/Robin.app
+          codesign --verify --deep --strict "$app"
+          lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/Robin"
+          lipo -verify_arch arm64 x86_64 "$app/Contents/PlugIns/RobinFinder.appex/Contents/MacOS/RobinFinder"
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent "$app" "dist/Robin-$VERSION-universal.zip"
+          (cd dist && shasum -a 256 "Robin-$VERSION-universal.zip" > "Robin-$VERSION-universal.zip.sha256")
+      - name: Publish release
+        run: |
+          gh release create "$TAG" dist/* \
+            --target "$GITHUB_SHA" --title "Robin $VERSION" \
+            --notes-file .github/release-notes.md
