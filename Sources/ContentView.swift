@@ -5,7 +5,7 @@ struct ContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image("AppIcon")
+                Image(nsImage: NSApplication.shared.applicationIconImage)
                     .resizable()
                     .frame(width: 44, height: 44)
                     .accessibilityHidden(true)

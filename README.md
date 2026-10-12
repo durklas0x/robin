@@ -2,7 +2,7 @@
 
 **Finder’s little sidekick.** An editable path bar that follows Finder, plus New File, Copy Folder Path, and quick Terminal/editor actions.
 
-Requires macOS 14+; supports Apple Silicon and Intel. The comic-mask icon includes native light/dark appearances on macOS 26+, with a light-icon fallback on earlier versions.
+Requires macOS 14+; supports Apple Silicon and Intel.
 
 ## Install
 

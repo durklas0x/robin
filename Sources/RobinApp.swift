@@ -5,10 +5,13 @@ import Carbon
 struct RobinApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     var body: some Scene {
-        MenuBarExtra("Robin", systemImage: "folder.badge.gearshape") {
+        MenuBarExtra {
             Button("Finder Extension Settings…") { delegate.enableExtension() }
             Button("About Robin…") { delegate.settings.show() }
             Button("Quit Robin") { NSApplication.shared.terminate(nil) }
+        } label: {
+            Image(nsImage: MenuBarIcon.image)
+                .accessibilityLabel("Robin")
         }
     }
 }
