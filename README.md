@@ -22,7 +22,6 @@ Robin lives in the menu bar and adds a floating location bar just below the acti
 
 ```sh
 brew install --cask durklas0x/tap/robin
-open /Applications/Robin.app
 ```
 
 Or download the ZIP from [Releases](https://github.com/durklas0x/robin/releases/latest), unzip it, and move `Robin.app` to Applications.
@@ -35,7 +34,6 @@ If macOS reports it as damaged or the approval option is unavailable, and you tr
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Robin.app
-open /Applications/Robin.app
 ```
 
 On first launch, Robin guides you through enabling its Finder extension and allowing Finder Automation. Both are required before Robin starts. Closing setup quits Robin; your progress resumes next launch.
