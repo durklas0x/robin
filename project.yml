@@ -85,6 +85,7 @@ targets:
       - Tests
       - Shared
       - Sources/BarPlacement.swift
+      - Sources/FinderBarPanel.swift
       - Sources/NewFileDestination.swift
       - Sources/FolderPath.swift
       - Sources/OnboardingProgress.swift

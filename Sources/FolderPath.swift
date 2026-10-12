@@ -16,6 +16,12 @@ struct FolderPath {
         return base.appendingPathComponent(expanded, isDirectory: true).standardizedFileURL
     }
 
+    static func isDirectory(_ url: URL) -> Bool {
+        // URL resource values describe a symlink itself; navigation needs its destination.
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
+    }
+
     private struct InvalidPath: LocalizedError {
         var errorDescription: String? { "Enter a local folder path, such as ~/Documents." }
     }

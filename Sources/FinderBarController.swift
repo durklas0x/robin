@@ -88,25 +88,6 @@ final class FinderBarController {
     }
 }
 
-private final class FinderBarPanel: NSPanel {
-    override var canBecomeKey: Bool { true }
-    override var canBecomeMain: Bool { false }
-
-    override func resignKey() {
-        // The nonactivating panel can retain an inactive field-editor selection.
-        if let editor = firstResponder as? NSText {
-            editor.selectedRange = NSRange(location: 0, length: 0)
-        }
-        makeFirstResponder(nil)
-        super.resignKey()
-        NotificationCenter.default.post(name: .finderBarDidEndEditing, object: self)
-    }
-}
-
-private extension Notification.Name {
-    static let finderBarDidEndEditing = Notification.Name("Robin.FinderBarDidEndEditing")
-}
-
 private extension CGRect {
     var area: CGFloat { isNull ? 0 : width * height }
 }

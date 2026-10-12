@@ -20,8 +20,7 @@ final class FinderActions: ObservableObject {
 
     private func folder(_ supplied: URL? = nil) throws -> URL {
         if let supplied {
-            let values = try supplied.resourceValues(forKeys: [.isDirectoryKey])
-            guard values.isDirectory == true else { throw ActionError.failed("Choose a folder for this action.") }
+            guard FolderPath.isDirectory(supplied) else { throw ActionError.failed("Choose a folder for this action.") }
             path = supplied.path
             return supplied
         }
@@ -70,7 +69,7 @@ final class FinderActions: ObservableObject {
         perform {
             let base = URL(fileURLWithPath: path, isDirectory: true)
             let destination = try FolderPath.resolve(input, relativeTo: base)
-            guard try destination.resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true else {
+            guard FolderPath.isDirectory(destination) else {
                 throw ActionError.failed("Enter the path of an existing folder.")
             }
             _ = try script("""
