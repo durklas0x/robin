@@ -1,8 +1,8 @@
-Robin adds folder autocomplete to the editable path bar. Press **Tab** to see matching folders beneath the text cursor, then choose with the mouse or arrow keys and Return. Absolute paths, relative paths, `~/`, spaces, and Unicode folder names are supported.
+Robin now refreshes the Finder extension bundled with the running app on launch and rechecks stale registration after updates. Setup distinguishes disabled extensions, pending registration, and another selected app copy while preserving your enabled/disabled choice.
 
-This release also fixes automatic path selection, preserves selection while Finder refreshes, and correctly recognizes existing folders reached through symlinks, including `/private/tmp` and `/tmp`.
+Registration checks run off the main thread with bounded retries. This fixes misleading disabled-extension reports caused by stale registrations; it does not bypass macOS approval requirements.
 
-Universal build for Apple Silicon and Intel, macOS 14 or newer. This build is ad-hoc signed and **not notarized**.
+Universal build for Apple Silicon and Intel, macOS 14 or newer. This build remains ad-hoc signed and **not notarized**.
 
 Install:
 

@@ -38,6 +38,8 @@ xattr -dr com.apple.quarantine /Applications/Robin.app
 
 On first launch, Robin guides you through enabling its Finder extension and allowing Finder Automation. Both are required before Robin starts. Closing setup quits Robin; your progress resumes next launch.
 
+Robin refreshes its bundled Finder extension registration when it launches, preserving your enabled/disabled choice. Setup distinguishes a disabled extension from pending registration or another selected app copy.
+
 Choose **Setup & Tour…** from the menu bar to reopen the guide or change launch at login. Terminal requests Automation access when you first use it.
 
 ## Build / release
@@ -51,4 +53,4 @@ xcodebuild -project Robin.xcodeproj -scheme Robin -destination 'platform=macOS' 
 
 Open `Robin.xcodeproj` to run, or use the included VS Code tasks with `xcode-build-server`. Tests belong to the Robin scheme; restart the Swift language server if indexing is stale.
 
-Run the **Release** GitHub Action with a version such as `1.2.0`, or push a `v1.2.0` tag. It tests, builds both architectures, verifies signatures, and publishes a ZIP with its SHA-256 checksum. Update the tap’s cask version and checksum for subsequent releases.
+Run the **Release** GitHub Action with a version such as `1.2.1`, or push a `v1.2.1` tag. It tests, builds both architectures, verifies signatures, and publishes a ZIP with its SHA-256 checksum. Update the tap’s cask version and checksum for subsequent releases.

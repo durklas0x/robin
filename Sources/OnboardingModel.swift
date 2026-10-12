@@ -11,7 +11,8 @@ final class OnboardingModel: ObservableObject {
     }
 
     @Published private(set) var progress: OnboardingProgress
-    @Published private(set) var extensionEnabled = false
+    @Published private(set) var extensionStatus: FinderExtensionStatus.Status = .checking
+    var extensionEnabled: Bool { extensionStatus == .enabled }
     @Published private(set) var automation: AutomationStatus = .checking
     @Published private(set) var checking = false
     @Published private(set) var loginEnabled = false
@@ -38,7 +39,7 @@ final class OnboardingModel: ObservableObject {
     func refresh(requestAutomation: Bool = false) async {
         guard !checking else { return }
         checking = true
-        extensionEnabled = await FinderExtensionStatus.check()
+        extensionStatus = await FinderExtensionStatus.check()
         refreshLogin()
         // Apple requires this call off the main thread, including permission preflight.
         let status = await Task.detached {
@@ -53,7 +54,7 @@ final class OnboardingModel: ObservableObject {
         case OSStatus(procNotFound): automation = .finderNotRunning
         default: automation = .unavailable(status)
         }
-        extensionEnabled = await FinderExtensionStatus.check()
+        extensionStatus = await FinderExtensionStatus.check()
         checking = false
     }
 

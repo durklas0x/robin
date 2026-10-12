@@ -30,8 +30,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forEventClass: AEEventClass(kInternetEventClass), andEventID: AEEventID(kAEGetURL))
     }
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if onboarding.model.progress.isComplete { startUtility() }
-        else { onboarding.show() }
+        Task { @MainActor in
+            // Register this app's bundled copy after replacement, preserving the user's election.
+            _ = await FinderExtensionStatus.check(registerCurrentCopy: true)
+            if onboarding.model.progress.isComplete { startUtility() }
+            else { onboarding.show() }
+        }
     }
 
     private func startUtility() {

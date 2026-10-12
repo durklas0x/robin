@@ -80,18 +80,44 @@ struct OnboardingView: View {
 
     private var finderExtension: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label(model.extensionEnabled ? "Finder extension is enabled" : "Enable Robin in the extension sheet",
+            Label(extensionTitle,
                   systemImage: model.extensionEnabled ? "checkmark.circle.fill" : "puzzlepiece.extension")
                 .font(.headline)
-            Text("Open Extension Settings, turn on Robin, then click Done. macOS may call this sheet File Providers.")
+            Text(extensionInstructions)
                 .fixedSize(horizontal: false, vertical: true)
             HStack {
                 Button("Open Extension Settings…") { FinderExtensionSettings.open() }
                 Button("Check Again") { Task { await model.refresh() } }
                     .disabled(model.checking)
             }
-            Text(model.extensionEnabled ? "You can continue." : "Return here after enabling Robin. This step is required.")
+            Text(model.extensionEnabled ? "You can continue." : "Check again after returning from Settings. This step is required.")
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private var extensionTitle: String {
+        switch model.extensionStatus {
+        case .checking: "Checking the Finder extension"
+        case .enabled: "Finder extension is enabled"
+        case .disabled: "Enable Robin in the extension sheet"
+        case .registrationPending: "Waiting for macOS to register Robin"
+        case .anotherCopySelected: "macOS is using another copy of Robin"
+        case .unavailable: "Could not check the Finder extension"
+        }
+    }
+
+    private var extensionInstructions: String {
+        switch model.extensionStatus {
+        case .checking:
+            "Robin is checking its extension registration and your saved setting."
+        case .enabled, .disabled:
+            "Open Extension Settings, turn on Robin, then click Done. macOS may call this sheet File Providers."
+        case .registrationPending:
+            "Robin has refreshed its extension registration. Give macOS a moment, then check again."
+        case .anotherCopySelected:
+            "Robin is enabled, but macOS selected another app copy. Quit other copies of Robin, open the app you want to use, then check again."
+        case .unavailable:
+            "macOS did not return the extension status. Check Robin in Extension Settings, then return here and try again."
         }
     }
 
