@@ -60,7 +60,7 @@ final class FinderBarController {
         guard let screen = NSScreen.screens.max(by: {
             $0.frame.intersection(frame).area < $1.frame.intersection(frame).area
         }), screen.frame.intersects(frame) else { panel.orderOut(nil); return }
-        actions.path = snapshot.folder.path
+        if actions.path != snapshot.folder.path { actions.path = snapshot.folder.path }
         panel.setFrame(BarPlacement.frame(below: frame, visibleFrame: screen.visibleFrame), display: true)
         panel.orderFrontRegardless()
     }
@@ -98,15 +98,22 @@ struct FinderBarView: View {
     @State private var copied = false
     @State private var copySequence = 0
     @State private var draftPath = ""
-    @FocusState private var editingPath: Bool
+    @State private var editingPath = false
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "folder").foregroundStyle(.secondary)
-            TextField("Folder path", text: $draftPath)
-                .textFieldStyle(.plain)
-                .font(.system(size: 12))
-                .focused($editingPath)
+            FolderPathField(text: $draftPath, editing: $editingPath,
+                            base: URL(fileURLWithPath: actions.path.isEmpty ? NSHomeDirectory() : actions.path),
+                            onSubmit: {
+                                if actions.navigate(to: draftPath) {
+                                    editingPath = false
+                                    draftPath = actions.path
+                                }
+                            }, onCancel: {
+                                draftPath = actions.path
+                                editingPath = false
+                            })
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 4)
@@ -117,18 +124,6 @@ struct FinderBarView: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .strokeBorder(Color.accentColor.opacity(editingPath ? 0.6 : 0), lineWidth: 1)
-                }
-                .help("Edit path · Return to open · Escape to cancel")
-                .accessibilityLabel("Folder path")
-                .onSubmit {
-                    if actions.navigate(to: draftPath) {
-                        editingPath = false
-                        draftPath = actions.path
-                    }
-                }
-                .onExitCommand {
-                    draftPath = actions.path
-                    editingPath = false
                 }
             Button {
                 if actions.copyPath() {
@@ -143,13 +138,14 @@ struct FinderBarView: View {
             .help(copied ? "Path copied" : "Copy folder path")
             .accessibilityLabel(copied ? "Path copied" : "Copy folder path")
             .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: copied)
+            .disabled(actions.path.isEmpty)
             Divider().frame(height: 16).padding(.horizontal, 2)
             Button { actions.newFile() } label: { Image(systemName: "doc.badge.plus") }
-                .help("New file").accessibilityLabel("New file")
+                .help("New file").accessibilityLabel("New file").disabled(actions.path.isEmpty)
             Button { actions.openTerminal() } label: { Image(systemName: "terminal") }
-                .help("Open Terminal here").accessibilityLabel("Open Terminal here")
+                .help("Open Terminal here").accessibilityLabel("Open Terminal here").disabled(actions.path.isEmpty)
             Button { actions.openEditor() } label: { Image(systemName: "curlybraces") }
-                .help("Open in editor").accessibilityLabel("Open in editor")
+                .help("Open in editor").accessibilityLabel("Open in editor").disabled(actions.path.isEmpty)
         }
         .buttonStyle(PathActionButtonStyle())
         .padding(.horizontal, 8)

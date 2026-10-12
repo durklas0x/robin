@@ -8,8 +8,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    MARKETING_VERSION: "1.2.0"
+    CURRENT_PROJECT_VERSION: "3"
 
 targets:
   Robin:
@@ -38,6 +38,7 @@ targets:
       path: Config/Robin-Info.plist
       properties:
         CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         NSAppleEventsUsageDescription: "Robin reads Finder window locations and opens Terminal in your folder."
         CFBundleURLTypes:
@@ -68,6 +69,7 @@ targets:
       path: Config/Finder-Info.plist
       properties:
         CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDisplayName: Robin Finder Actions
         NSExtension:
           NSExtensionAttributes: {}
@@ -86,6 +88,8 @@ targets:
       - Shared
       - Sources/BarPlacement.swift
       - Sources/FinderBarPanel.swift
+      - Sources/FolderPathField.swift
+      - Sources/FolderCompletion.swift
       - Sources/NewFileDestination.swift
       - Sources/FolderPath.swift
       - Sources/OnboardingProgress.swift

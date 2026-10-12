@@ -10,7 +10,7 @@ Requires macOS 14+; supports Apple Silicon and Intel.
 
 Robin lives in the menu bar and adds a floating location bar just below the active Finder window.
 
-- **Editable folder path:** copy the current location or type a different path. Press **Return** to open it or **Escape** to cancel. Absolute paths, relative paths, and `~/` are supported.
+- **Editable folder path:** copy the current location or type a different path. Press **Return** to open it or **Escape** to cancel. Absolute paths, relative paths, and `~/` are supported. Press **Tab** for folder autocomplete, then select a suggestion with the mouse or arrow keys and Return.
 - **New File:** create an empty file in the current folder with a compact filename dialog.
 - **Quick tools:** open Terminal in the current folder, or choose an editor to open it in.
 - **Finder right-click actions:** New File, Copy Folder Path, Open Terminal Here, and Open in Editor are also available when you right-click a folder or Finder’s background.
@@ -51,4 +51,4 @@ xcodebuild -project Robin.xcodeproj -scheme Robin -destination 'platform=macOS' 
 
 Open `Robin.xcodeproj` to run, or use the included VS Code tasks with `xcode-build-server`. Tests belong to the Robin scheme; restart the Swift language server if indexing is stale.
 
-Run the **Release** GitHub Action with a version such as `1.1.0`, or push a `v1.1.0` tag. It tests, builds both architectures, verifies signatures, and publishes a ZIP with its SHA-256 checksum. Update the tap’s cask version and checksum for subsequent releases.
+Run the **Release** GitHub Action with a version such as `1.2.0`, or push a `v1.2.0` tag. It tests, builds both architectures, verifies signatures, and publishes a ZIP with its SHA-256 checksum. Update the tap’s cask version and checksum for subsequent releases.
