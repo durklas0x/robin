@@ -1,0 +1,45 @@
+{
+  "fill": "none",
+  "groups": [
+    {
+      "name": "Robin artwork",
+      "layers": [
+        {
+          "name": "Robin",
+          "image-name-specializations": [
+            {
+              "value": "Robin-Light.png"
+            },
+            {
+              "appearance": "dark",
+              "value": "Robin-Dark.png"
+            }
+          ],
+          "glass": false,
+          "position": {
+            "scale": 1.16,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "specular": false,
+      "shadow": {
+        "kind": "none",
+        "opacity": 0
+      },
+      "translucency": {
+        "enabled": false,
+        "value": 0
+      },
+      "blur-material": 0
+    }
+  ],
+  "supported-platforms": {
+    "squares": [
+      "macOS"
+    ]
+  }
+}

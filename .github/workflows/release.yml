@@ -6,7 +6,7 @@ on:
       version:
         description: Release version (for example 1.0.0)
         required: true
-        default: "1.0.0"
+        default: "1.0.1"
   push:
     tags:
       - "v*"
@@ -61,6 +61,19 @@ jobs:
             -configuration Release -destination 'generic/platform=macOS' \
             -derivedDataPath build ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
             CODE_SIGN_IDENTITY=- MARKETING_VERSION="$VERSION" build
+      - name: Verify icon appearances
+        run: |
+          xcrun assetutil --info build/Build/Products/Release/Robin.app/Contents/Resources/Assets.car > "$RUNNER_TEMP/robin-icon-assets.json"
+          python3 - "$RUNNER_TEMP/robin-icon-assets.json" <<'PYICON'
+          import json, sys
+          assets = json.load(open(sys.argv[1]))
+          names = {asset.get("Name", "") for asset in assets}
+          for artwork in ("Robin-Light", "Robin-Dark"):
+              assert any(name.endswith("/" + artwork) for name in names), f"Missing {artwork} artwork"
+          appearances = {asset.get("Appearance", "") for asset in assets if asset.get("AssetType") == "IconImageStack"}
+          assert any("Dark" in appearance for appearance in appearances), "Missing dark icon appearance"
+          print("Light and dark icon artwork verified")
+          PYICON
       - name: Verify and package
         shell: bash
         run: |
