@@ -66,6 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           app=build/Build/Products/Release/Robin.app
+          [[ "$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist")" == "$VERSION" ]]
           codesign --verify --deep --strict "$app"
           lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/Robin"
           lipo -verify_arch arm64 x86_64 "$app/Contents/PlugIns/RobinFinder.appex/Contents/MacOS/RobinFinder"

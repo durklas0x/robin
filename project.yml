@@ -31,6 +31,7 @@ targets:
     info:
       path: Config/Robin-Info.plist
       properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
         LSUIElement: true
         NSAppleEventsUsageDescription: "Robin reads Finder window locations and opens Terminal in your folder."
         CFBundleURLTypes:
@@ -56,6 +57,7 @@ targets:
     info:
       path: Config/Finder-Info.plist
       properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleDisplayName: Robin Finder Actions
         NSExtension:
           NSExtensionAttributes: {}
