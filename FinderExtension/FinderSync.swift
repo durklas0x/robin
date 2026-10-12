@@ -25,10 +25,10 @@ final class FinderSync: FIFinderSync {
             (try? candidate.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
         let folder = isDirectory ? candidate : candidate.deletingLastPathComponent()
         let menu = NSMenu(title: "Pathlet")
-        for (title, action) in [("New File…", ActionRequest.Action.newFile),
+        for (title, action) in [("New File", ActionRequest.Action.newFile),
                                 ("Copy Folder Path", .copy),
                                 ("Open Terminal Here", .terminal),
-                                ("Open in Editor…", .editor)] {
+                                ("Open in Editor", .editor)] {
             let item = NSMenuItem(title: title, action: #selector(runAction(_:)), keyEquivalent: "")
             item.target = self
             // Capture context now; do not ask the host to re-read another Finder window.
